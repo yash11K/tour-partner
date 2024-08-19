@@ -26,8 +26,13 @@ export class JwtStratergy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: unknown): unknown {
-    return payload;
+  validate(payload: any): any {
+    return {
+      userId: payload.sub,
+      username: payload.username,
+      permissions: payload.permissions,
+      orgId: payload.org_id,
+    };
   }
 }
 
