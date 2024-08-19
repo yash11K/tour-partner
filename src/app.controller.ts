@@ -1,7 +1,10 @@
-import { Body, Controller, Get, Header, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
+import { Permissions, PermissionsGuard } from './auth';
 
+
+@UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller()
 export class AppController {
     constructor(private readonly appService: AppService) { }
@@ -12,14 +15,23 @@ export class AppController {
     }
 
     @Post()
-    @UseGuards(AuthGuard('jwt'))
     sayWhatever(@Body() requestBody: any) {
         return requestBody;
     }
 
     @Get('/api/external')
-    @UseGuards(AuthGuard('jwt'))
+    @Permissions('create:organization')
     sayToAuthenticated() {
-        return JSON.stringify("Yayy!! You are now logged in and accessing a private endpoint");
+      try{
+        return JSON.stringify('Hey, Super Admin , Welcome to the exclusive page');
+      } catch(error){
+        throw new HttpException({
+          status: HttpStatus.FORBIDDEN,
+          message: 'This page is exclusively for our admins',
+          error: 'FORBIDDEN',
+        }, HttpStatus.FORBIDDEN, {
+          cause: error
+        });
+      }
     }
 }
