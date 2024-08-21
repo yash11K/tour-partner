@@ -1,8 +1,7 @@
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Permissions, PermissionsGuard } from 'src/auth';
 
-@UseGuards(AuthGuard('jwt'), PermissionsGuard) 
+@UseGuards(AuthGuard('jwt')) 
 @Controller('profile')
 export class SuperAdminController {
 
