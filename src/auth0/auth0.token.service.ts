@@ -1,12 +1,14 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { lastValueFrom } from 'rxjs';
+import { Auth0Config, TokenRequest } from './auth0.dto';
 
 @Injectable()
 export class TokenService {
   private tokenExpiresAt: Date;
   private token: string;
+  private auth0Config : Auth0Config;
 
   constructor(
     private readonly httpService: HttpService,
@@ -34,28 +36,29 @@ export class TokenService {
     accessToken: string;
     expiresIn: string;
   }> {
-    const auth0Config = this.configService.get<{
-      clientId: string;
-      clientSecret: string;
-      grantType: string;
-      domain: string;
-    }>('auth0');
 
-    const tokenRequest: TokenRequest = new TokenRequest();
-    tokenRequest.clientSecret = auth0Config.clientSecret;
-    tokenRequest.clientId = auth0Config.clientId;
-    tokenRequest.grantType = auth0Config.grantType;
-    tokenRequest.managementAudience =
-      'https://' + auth0Config.domain + '/api/v2/';
+    this.auth0Config = this.configService.get<Auth0Config>('auth0', {
+      domain: process.env.AUTH0_DOMAIN,
+      clientId: process.env.AUTH0_CLIENT_ID,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET,
+      grantType: process.env.AUTH0_GRANT_TYPE,
+    });
+    
+    const tokenRequest: TokenRequest = {
+      clientSecret: this.auth0Config.clientSecret,
+      clientId: this.auth0Config.clientId,
+      grantType: this.auth0Config.grantType,
+      audience: 'https://' + this.auth0Config.domain + '/api/v2/'
+    };
 
-    const tokenUrl: string = 'https://' + auth0Config.domain + '/auth/token/';
+    const tokenUrl: string = 'https://' + this.auth0Config.domain + '/oauth/token';
 
     const response = await lastValueFrom(
       this.httpService.post(tokenUrl, {
         grant_type: tokenRequest.grantType,
         client_id: tokenRequest.clientId,
-        client_secret: tokenRequest.grantType,
-        audience: tokenRequest.managementAudience,
+        client_secret: tokenRequest.clientSecret,
+        audience: tokenRequest.audience,
       }),
     );
 
