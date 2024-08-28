@@ -12,11 +12,10 @@ export class SuperAdminController {
     const orgId = req.user.orgId;
     const permissions = req.user.permissions;
     const userId = req.user.userId;
-    //return {
-    //  'userId': userId, 
-    //  'orgId': orgId,
-    //  'permissions': permissions
-    //}
-    return req.headers;
+    return {
+      'userId': userId, 
+      'orgId': orgId,
+      'permissions': permissions
+    }
   }
 }

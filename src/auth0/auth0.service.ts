@@ -18,7 +18,7 @@ export class Auth0Service{
       switch(permission){
         case 'create:organization':
           return ROLES.SuperAdmin;
-        case 'create:member':
+        case 'create:members':
           role = ROLES.Admin;
         break;
         case 'read:member':
@@ -61,11 +61,27 @@ private endpointProvider(ep: string, options?: EndpointOptions): string {
       return organizations;
   }
 
+  public async fetchOrganization(_orgId: string): Promise<Organization>{
+    const endpoint = this.endpointProvider('organizations/:id', { pathParams: {id: _orgId}});
+    const organizaton: Organization = await lastValueFrom( this.httpService.get<Organization>(endpoint).pipe(
+      map(res => res.data),
+    ));
+      return organizaton;
+  }
+
   public async fetchLoggedInUserDetails(_id: string): Promise<User>{
     const endpoint = this.endpointProvider('users/:id', { pathParams: {id: _id }});
     const user = await lastValueFrom(this.httpService.get<User>(endpoint).pipe(
       map(res => res.data),
     ));
     return user;
+  }
+
+  public async fetchAllOragnizationMembers(organizationId: any) {
+    const endpoint = this.endpointProvider('organizations/:id/members', {pathParams: {id: organizationId}});
+    const members = await lastValueFrom(this.httpService.get<User[]>(endpoint).pipe(
+      map(res => res.data),
+    ));
+    return members;
   }
 }

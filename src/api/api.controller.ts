@@ -22,11 +22,16 @@ export class ApiController {
     const permissions: string[] = req.user.permissions;
     const role: ROLES = this.auth0Service.rolesDilator(permissions);
     const userId: string = req.user.userId;   
+    const orgId: string = req.user.orgId;
+
     if(role == ROLES.SuperAdmin){
-      Logger.log('Fetching profile details for user:', userId); 
-      return this.apiService.getSuperAdminProfile(userId);
+      Logger.log('Fetching profile details for SuperAdmin', userId); 
+      return this.apiService.getSuperAdminProfile(userId,ROLES[role]);
+    } else if (role == ROLES.Admin) {
+      Logger.log('Fetching profile details for Admin', userId); 
+      return this.apiService.getAdminProfile(userId, orgId, ROLES[role]);
     } else {
-      return "Throw permissions not configured error";
+      return "Throw permissions not configured error" + ROLES[role];
     }
   }
 }
