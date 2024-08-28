@@ -6,17 +6,27 @@ import { Auth0Config, TokenRequest } from './auth0.dto';
 
 @Injectable()
 export class TokenService {
+  private readonly auth0Config : Auth0Config = this.configService.get<Auth0Config>('auth0', {
+    domain: process.env.AUTH0_DOMAIN,
+    clientId: process.env.AUTH0_CLIENT_ID,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET,
+    grantType: process.env.AUTH0_GRANT_TYPE,
+  });
+  private readonly tokenUrl: string = 'https://' + this.auth0Config.domain + '/oauth/token';
+
   private tokenExpiresAt: Date;
   private token: string;
-  private auth0Config : Auth0Config;
 
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    constructor(
+      private readonly httpService: HttpService,
+      private readonly configService: ConfigService,
   ) {}
 
   private isTokenExpired(): boolean {
-    if (!this.tokenExpiresAt) return true;
+    if (!this.tokenExpiresAt){
+      Logger.log('Token has expired, refreshing at :' + Date.now().toLocaleString);
+      return true;
+    }
     return Date.now() >= this.tokenExpiresAt.getTime() - 5000; //extra 5s for buffer
   }
 
@@ -37,12 +47,6 @@ export class TokenService {
     expiresIn: string;
   }> {
 
-    this.auth0Config = this.configService.get<Auth0Config>('auth0', {
-      domain: process.env.AUTH0_DOMAIN,
-      clientId: process.env.AUTH0_CLIENT_ID,
-      clientSecret: process.env.AUTH0_CLIENT_SECRET,
-      grantType: process.env.AUTH0_GRANT_TYPE,
-    });
     
     const tokenRequest: TokenRequest = {
       clientSecret: this.auth0Config.clientSecret,
@@ -51,10 +55,10 @@ export class TokenService {
       audience: 'https://' + this.auth0Config.domain + '/api/v2/'
     };
 
-    const tokenUrl: string = 'https://' + this.auth0Config.domain + '/oauth/token';
 
+    Logger.log('Calling Token API');
     const response = await lastValueFrom(
-      this.httpService.post(tokenUrl, {
+      this.httpService.post(this.tokenUrl, {
         grant_type: tokenRequest.grantType,
         client_id: tokenRequest.clientId,
         client_secret: tokenRequest.clientSecret,

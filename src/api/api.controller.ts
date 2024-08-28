@@ -1,26 +1,32 @@
 import { Controller, Get, HttpException, HttpStatus, Logger, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { TokenService } from 'src/auth0/auth0.token.service';
+import { ROLES } from 'src/auth0/auth0.roles.enum';
+import { Auth0Service } from 'src/auth0/auth0.service';
+import { ApiService } from './api.service';
+import { PermissionsGuard } from 'src/auth';
+import { ApiHeader } from '@nestjs/swagger';
 
-@UseGuards(AuthGuard('jwt'))
-@Controller('profile/2')
+@UseGuards(AuthGuard('jwt'), PermissionsGuard)
+@Controller()
 export class ApiController {
   constructor(
-    private readonly tokenService : TokenService
+    private readonly auth0Service: Auth0Service,
+    private readonly apiService: ApiService,
   ){}
 
-  @Get()
-  getProfile(@Req() req: any) {
-    if (!req.user || !req.user.permissions) {
-      throw new HttpException('User permissions not found', HttpStatus.UNAUTHORIZED);
-    }
-
+  @ApiHeader({
+    name: 'Authorization'
+  })
+  @Get('profile')
+  getProfile(@Req() req: any): any{
     const permissions: string[] = req.user.permissions;
-    if (permissions.find((perm) => perm === 'create:organization')) {
-      return this.tokenService.getToken();
+    const role: ROLES = this.auth0Service.rolesDilator(permissions);
+    const userId: string = req.user.userId;   
+    if(role == ROLES.SuperAdmin){
+      Logger.log('Fetching profile details for user:', userId); 
+      return this.apiService.getSuperAdminProfile(userId);
     } else {
-      Logger.log(permissions);
-      throw new HttpException('Permission denied', HttpStatus.FORBIDDEN);
+      return "Throw permissions not configured error";
     }
   }
 }
