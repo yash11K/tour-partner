@@ -57,6 +57,7 @@ export class TokenService {
 
 
     Logger.log('Calling Token API');
+    const startTime = Date.now();
     const response = await lastValueFrom(
       this.httpService.post(this.tokenUrl, {
         grant_type: tokenRequest.grantType,
@@ -65,6 +66,7 @@ export class TokenService {
         audience: tokenRequest.audience,
       }),
     );
+    Logger.log(`API call completed in ${Date.now() - startTime} ms`);
 
     this.tokenExpiresAt = response.data.expires_in;
     return {

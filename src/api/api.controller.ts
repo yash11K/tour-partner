@@ -30,6 +30,7 @@ export class ApiController {
     } else if (role == ROLES.Admin) {
       Logger.log('Fetching profile details for Admin', userId); 
       return this.apiService.getAdminProfile(userId, orgId, ROLES[role]);
+
     } else {
       return "Throw permissions not configured error" + ROLES[role];
     }

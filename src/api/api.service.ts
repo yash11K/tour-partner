@@ -19,9 +19,9 @@ export class ApiService {
     }; 
   }
 
-  public async getAdminProfile(userId: string, _orgId: string, role: string): Promise<any> {
+  public async getAdminProfile(_userId: string, _orgId: string, _role: string): Promise<any> {
     const _members = await this.auth0Service.fetchAllOragnizationMembers(_orgId);
     const _organization = await this.auth0Service.fetchOrganization(_orgId);
-    return{organiation: _organization ,members: _members};
+    return{role:_role, organiation: _organization ,members: _members};
   }
 }

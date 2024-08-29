@@ -13,9 +13,11 @@ export class HttpModuleInterceptor implements OnModuleInit {
   ){}
 
   async onModuleInit() {
+    let startTime: number;
     let token = 'Bearer ' + await this.tokenService.getToken(); 
     this.httpService.axiosRef.interceptors.request.use(
       (config) => {
+        startTime = Date.now();
         Logger.log(`Request to: ${config.method.toUpperCase()} ${config.url}`);
         config.headers['Authorization'] = token;
         return config;
@@ -28,6 +30,7 @@ export class HttpModuleInterceptor implements OnModuleInit {
     this.httpService.axiosRef.interceptors.response.use(
       (config) => {
         Logger.log('Response recieved from auth0 : ' + config.data);
+        Logger.log(`API call completed in ${Date.now() - startTime} ms`);
         return config
       },
       (error) => {
