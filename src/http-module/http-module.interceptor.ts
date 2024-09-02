@@ -10,11 +10,11 @@ export class HttpModuleInterceptor implements OnModuleInit {
   constructor(
     private httpService: HttpService,
     private readonly tokenService: TokenService
-  ){}
+  ) { }
 
   async onModuleInit() {
     let startTime: number;
-    let token = 'Bearer ' + await this.tokenService.getToken(); 
+    let token = 'Bearer ' + await this.tokenService.getToken();
     this.httpService.axiosRef.interceptors.request.use(
       (config) => {
         startTime = Date.now();
@@ -29,7 +29,6 @@ export class HttpModuleInterceptor implements OnModuleInit {
     );
     this.httpService.axiosRef.interceptors.response.use(
       (config) => {
-        Logger.log('Response recieved from auth0 : ' + config.data);
         Logger.log(`API call completed in ${Date.now() - startTime} ms`);
         return config
       },

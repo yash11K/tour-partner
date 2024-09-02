@@ -1,0 +1,10 @@
+{
+  "connections": [
+    {
+      "connection_id": "con_41JuBNf01LoFW24o",
+      "assign_membership_on_login": false,
+      "show_as_button": true,
+      "is_signup_enabled": false
+    }
+  ]
+}

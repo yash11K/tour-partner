@@ -1,4 +1,5 @@
 import { Expose, Transform } from "class-transformer";
+import { ApiProperty } from '@nestjs/swagger';
 
 export interface Auth0Config{
   clientId: string;
@@ -6,6 +7,25 @@ export interface Auth0Config{
   grantType: string;
   domain: string;
 }
+
+
+//export class ConnectionConfig {
+//  @Expose()
+//  @ApiProperty({ description: 'Unique identifier for the connection' })
+//  connectionId: string;
+//
+//  @Expose()
+//  @ApiProperty({ description: 'Whether to assign membership on login' })
+//  assignMembershipOnLogin: boolean;
+//
+//  @Expose()
+//  @ApiProperty({ description: 'Whether to show as a button' })
+//  showAsButton: boolean;
+//
+//  @Expose()
+//  @ApiProperty({ description: 'Whether sign-up is enabled for this connection' })
+//  isSignUpEnabled: boolean;
+//}
 
 export interface EndpointOptions {
   pathParams?: Record<string, string>;
@@ -26,14 +46,5 @@ export class TokenRequest{
   audience: string;
 }
 
-class Branding{
-  logo_url: string;
-}
 
-export class Organization{
-  id: string;
-  name: string;
-  display_name: string;
-  branding: Branding;
-}
 

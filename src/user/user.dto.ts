@@ -1,12 +1,24 @@
-class User {
-  activityStatus: boolean;
-  createdAt: string;
+import { ApiProperty } from "@nestjs/swagger";
+
+export class User {
+  @ApiProperty()
+  activityStatus?: boolean;
+  @ApiProperty()
+  createdAt?: string;
+  @ApiProperty()
   email: string;
-  verifiedEmail: boolean;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  pfpUrl: string;
-  lastLogin: string;
+  @ApiProperty()
+  verifiedEmail?: boolean;
+  @ApiProperty()
+  firstName?: string;
+  @ApiProperty()
+  lastName?: string;
+  @ApiProperty()
+  phoneNumber?: string;
+  @ApiProperty()
+  picture: string;
+  @ApiProperty()
+  lastLogin?: string;
+  @ApiProperty()
   userId: string;
 }

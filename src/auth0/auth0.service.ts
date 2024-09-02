@@ -1,8 +1,11 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ROLES } from './auth0.roles.enum';
 import { lastValueFrom, map } from 'rxjs';
-import { EndpointOptions, Organization } from './auth0.dto';
+import { EndpointOptions } from './auth0.dto';
+import { User } from 'src/user/user.dto';
+import { OrganizationResponse } from 'src/organization/organization.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class Auth0Service{
@@ -53,17 +56,18 @@ private endpointProvider(ep: string, options?: EndpointOptions): string {
 
   return endpoint;
 }
-  public async fetchAllOrganizations(): Promise<Organization[]>{
+  public async fetchAllOrganizations(): Promise<OrganizationResponse[]>{
     const endpoint = this.endpointProvider('organizations');
-    const organizations = await lastValueFrom( this.httpService.get<Organization[]>(endpoint).pipe(
-      map(res => res.data),
-    ));
+    const organizations = await lastValueFrom( this.httpService.get<OrganizationResponse[]>(endpoint).pipe(
+      map(
+        res => plainToInstance(OrganizationResponse, res.data),
+      )));
       return organizations;
   }
 
-  public async fetchOrganization(_orgId: string): Promise<Organization>{
+  public async fetchOrganization(_orgId: string): Promise<OrganizationResponse>{
     const endpoint = this.endpointProvider('organizations/:id', { pathParams: {id: _orgId}});
-    const organizaton: Organization = await lastValueFrom( this.httpService.get<Organization>(endpoint).pipe(
+    const organizaton: OrganizationResponse = await lastValueFrom( this.httpService.get<OrganizationResponse>(endpoint).pipe(
       map(res => res.data),
     ));
       return organizaton;
@@ -77,11 +81,35 @@ private endpointProvider(ep: string, options?: EndpointOptions): string {
     return user;
   }
 
-  public async fetchAllOragnizationMembers(organizationId: any) {
+  public async fetchAllOragnizationMembers(organizationId: string): Promise<User[]> {
     const endpoint = this.endpointProvider('organizations/:id/members', {pathParams: {id: organizationId}});
     const members = await lastValueFrom(this.httpService.get<User[]>(endpoint).pipe(
       map(res => res.data),
     ));
     return members;
+  }
+
+  public async postOrganization(orgReq: Record<string, string>): Promise<number> {
+    const endpoint = this.endpointProvider('organizations');
+    Logger.log(orgReq);
+    try{
+      const status = await lastValueFrom(this.httpService.post<void>(endpoint, orgReq).pipe(
+        map(res => res.status),
+      ));
+        return status;
+    }catch(error){
+      throw error;
+    }
+  }
+  public async fetchOrganizationByName(name: string): Promise<OrganizationResponse> {
+    const endpoint = this.endpointProvider('organizations/name/:org_name', { pathParams: { org_name: name } });
+    try{
+      const org: OrganizationResponse = await lastValueFrom(this.httpService.get<OrganizationResponse>(endpoint).pipe(
+        map(res => res.data),
+      ));
+      return org;
+    }catch(error){
+      throw error;
+    }
   }
 }
