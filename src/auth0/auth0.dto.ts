@@ -46,5 +46,24 @@ export class TokenRequest{
   audience: string;
 }
 
+/**
+  *
+  * Deals with API Responses having emptybody
+  *
+  * @returns statusCode only when 2XX otherwise error, errorCode, message 
+  * @beta
+  * 
+*/
+export class ApiResponseError{
+  @Expose()
+  statusCode: number;
 
+  @Expose()
+  error?: string;
 
+  @Expose()
+  errorCode?: string;
+
+  @Expose()
+  message?:string;
+}

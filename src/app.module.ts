@@ -11,10 +11,15 @@ import { HttpModuleInterceptor } from './http-module/http-module.interceptor';
 import { HttpModule } from '@nestjs/axios';
 import { TokenService } from './auth0/auth0.token.service';
 import { OrganizationModule } from './organization/organization.module';
+import { ErrorInterceptor } from './http-module/http-module.error.interceptor';
 
 @Module({
   controllers: [AppController],
   providers: [AppService, TokenService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ErrorInterceptor,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: Auth0Interceptor,

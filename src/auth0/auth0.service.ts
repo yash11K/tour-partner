@@ -1,8 +1,8 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ROLES } from './auth0.roles.enum';
-import { lastValueFrom, map } from 'rxjs';
-import { EndpointOptions } from './auth0.dto';
+import { catchError, lastValueFrom, map, of } from 'rxjs';
+import { ApiResponseError as ApiResponseError, EndpointOptions } from './auth0.dto';
 import { User } from 'src/user/user.dto';
 import { OrganizationResponse } from 'src/organization/organization.dto';
 import { plainToInstance } from 'class-transformer';
@@ -86,21 +86,25 @@ private endpointProvider(ep: string, options?: EndpointOptions): string {
     const members = await lastValueFrom(this.httpService.get<User[]>(endpoint).pipe(
       map(res => res.data),
     ));
-    return members;
+      return members;
   }
 
-  public async postOrganization(orgReq: Record<string, string>): Promise<number> {
+  public async postOrganization(orgReq: Record<string, string>): Promise<ApiResponseError> {
     const endpoint = this.endpointProvider('organizations');
-    Logger.log(orgReq);
-    try{
-      const status = await lastValueFrom(this.httpService.post<void>(endpoint, orgReq).pipe(
-        map(res => res.status),
-      ));
-        return status;
-    }catch(error){
-      throw error;
-    }
+    let response: ApiResponseError;
+
+    await lastValueFrom(this.httpService.post<void>(endpoint, orgReq).pipe(
+      map(res => {
+        if(res.status === 201){
+          response.statusCode = res.status;
+        } else{
+          response = plainToInstance(ApiResponseError, res.data);
+        }
+      })
+    )); 
+    return response;
   }
+
   public async fetchOrganizationByName(name: string): Promise<OrganizationResponse> {
     const endpoint = this.endpointProvider('organizations/name/:org_name', { pathParams: { org_name: name } });
     try{
