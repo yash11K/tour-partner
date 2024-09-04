@@ -20,8 +20,13 @@ export class OrganizationResponse{
   @ApiProperty()
   displayName: string;
 
+  @Expose()
   @ApiProperty()
   branding: Branding;
+
+  @Expose()
+  @ApiProperty()
+  metadata: Record<string,string>
 }
 
 export class OrganizationRequest {
@@ -37,6 +42,10 @@ export class OrganizationRequest {
 
   @Expose({ name: 'enabled_connections' })
   enabledConnections: any;
+
+  @Expose()
+  metadata?: Record<string,string>;
+ 
 }
 
 export class OrganizationApiRequest{
@@ -44,11 +53,15 @@ export class OrganizationApiRequest{
   @ApiProperty()
   name: string;
 
-  @Expose()
+  @Expose({ name: 'display_name'})
   @ApiProperty()
   displayName: string;
 
   @Expose()
   @ApiProperty()
   logo: string;
+
+  @Expose()
+  @ApiProperty()
+  metadata?: Record<string,string>
 }

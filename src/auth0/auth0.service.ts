@@ -35,27 +35,28 @@ export class Auth0Service{
     }
   }
 
-private endpointProvider(ep: string, options?: EndpointOptions): string {
-  let endpoint: string = `https://${this.domain}/api/v2/${ep}`;
+  private endpointProvider(ep: string, options?: EndpointOptions): string {
+    let endpoint: string = `https://${this.domain}/api/v2/${ep}`;
 
-  if (options?.pathParams) {
-    Object.entries(options.pathParams).forEach(([key, value]) => {
-      endpoint = endpoint.replace(`:${key}`, encodeURIComponent(value));
-    });
-  }
+      if (options?.pathParams) {
+      Object.entries(options.pathParams).forEach(([key, value]) => {
+        endpoint = endpoint.replace(`:${key}`, encodeURIComponent(value));
+      });
+    }
 
-  if (options?.queryParams) {
-    const queryString = Object.entries(options.queryParams)
+    if (options?.queryParams) {
+      const queryString = Object.entries(options.queryParams)
       .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
       .join('&');
-    
-    if (queryString) {
-      endpoint += `?${queryString}`;
+
+      if (queryString) {
+        endpoint += `?${queryString}`;
+      }
     }
+
+    return endpoint;
   }
 
-  return endpoint;
-}
   public async fetchAllOrganizations(): Promise<OrganizationResponse[]>{
     const endpoint = this.endpointProvider('organizations');
     const organizations = await lastValueFrom( this.httpService.get<OrganizationResponse[]>(endpoint).pipe(
@@ -67,10 +68,10 @@ private endpointProvider(ep: string, options?: EndpointOptions): string {
 
   public async fetchOrganization(_orgId: string): Promise<OrganizationResponse>{
     const endpoint = this.endpointProvider('organizations/:id', { pathParams: {id: _orgId}});
-    const organizaton: OrganizationResponse = await lastValueFrom( this.httpService.get<OrganizationResponse>(endpoint).pipe(
+    const _= await lastValueFrom( this.httpService.get<OrganizationResponse>(endpoint).pipe(
       map(res => res.data),
     ));
-      return organizaton;
+    return plainToInstance(OrganizationResponse, _);
   }
 
   public async fetchLoggedInUserDetails(_id: string): Promise<User>{
@@ -89,31 +90,30 @@ private endpointProvider(ep: string, options?: EndpointOptions): string {
       return members;
   }
 
-  public async postOrganization(orgReq: Record<string, string>): Promise<ApiResponseError> {
-    const endpoint = this.endpointProvider('organizations');
-    let response: ApiResponseError;
 
-    await lastValueFrom(this.httpService.post<void>(endpoint, orgReq).pipe(
-      map(res => {
-        if(res.status === 201){
-          response.statusCode = res.status;
-        } else{
-          response = plainToInstance(ApiResponseError, res.data);
-        }
-      })
-    )); 
-    return response;
-  }
+  public async sendOrganizationRequest(
+    method: 'post' | 'patch', 
+    orgReq: Record<string, string>,
+    organizationId?: string): Promise<number> {
+      let endpoint: string;
+      if(method === 'patch'){
+        endpoint = this.endpointProvider('organizations/:id', {pathParams: {id: organizationId }});
+      } else endpoint = this.endpointProvider('organizations');
 
-  public async fetchOrganizationByName(name: string): Promise<OrganizationResponse> {
-    const endpoint = this.endpointProvider('organizations/name/:org_name', { pathParams: { org_name: name } });
-    try{
-      const org: OrganizationResponse = await lastValueFrom(this.httpService.get<OrganizationResponse>(endpoint).pipe(
-        map(res => res.data),
-      ));
-      return org;
-    }catch(error){
-      throw error;
+      let response = await lastValueFrom(this.httpService[method]<void>(endpoint, orgReq).pipe(
+        map(res => res.status)
+      )); 
+      return response;
     }
+    public async fetchOrganizationByName(name: string): Promise<OrganizationResponse> {
+      const endpoint = this.endpointProvider('organizations/name/:org_name', { pathParams: { org_name: name } });
+      try{
+        const org: OrganizationResponse = await lastValueFrom(this.httpService.get<OrganizationResponse>(endpoint).pipe(
+          map(res => res.data),
+        ));
+          return org;
+      }catch(error){
+        throw error;
+      }
   }
 }

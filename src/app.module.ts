@@ -12,6 +12,7 @@ import { HttpModule } from '@nestjs/axios';
 import { TokenService } from './auth0/auth0.token.service';
 import { OrganizationModule } from './organization/organization.module';
 import { ErrorInterceptor } from './http-module/http-module.error.interceptor';
+import { GlobalExceptionFilter } from './globl.exception.interceptor';
 
 @Module({
   controllers: [AppController],
@@ -27,6 +28,10 @@ import { ErrorInterceptor } from './http-module/http-module.error.interceptor';
     {
       provide: APP_INTERCEPTOR,
       useClass: HttpModuleInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: GlobalExceptionFilter,
     },
   ],
   imports: [ConfigModule.forRoot({

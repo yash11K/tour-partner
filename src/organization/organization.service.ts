@@ -1,26 +1,41 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Post } from '@nestjs/common';
 import { Auth0Service } from 'src/auth0/auth0.service';
 import { OrganizationApiRequest, OrganizationRequest, OrganizationResponse } from './organization.dto';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import { OrganizationTransformer } from './organization.transformer';
 import { ApiResponseError as ApiResponseError } from 'src/auth0/auth0.dto';
+import { User } from 'src/user/user.dto';
 
 @Injectable()
-  export class OrganizationService {
-    constructor(
-      private readonly auth0Service: Auth0Service,
-      private readonly transformer: OrganizationTransformer
-    ){}
+export class OrganizationService {
 
-  async postOrganization(org: OrganizationApiRequest): Promise<ApiResponseError> {
-    let _: ApiResponseError;
-    const orgRequest = this.transformer.apiToInteranl(org);
+  constructor(
+    private readonly auth0Service: Auth0Service,
+    private readonly transformer: OrganizationTransformer
+  ){}
+
+  async postOrganization(org: OrganizationApiRequest): Promise<number> {
+    const orgRequest = this.transformer.apiToInternal(org, 'post');
     const request = instanceToPlain(orgRequest);
-    _= await this.auth0Service.postOrganization(request);
-    return _;
+    return await this.auth0Service.sendOrganizationRequest('post', request);
   }
   async getOrganizationByName(name: string): Promise<OrganizationResponse> {
     return this.auth0Service.fetchOrganizationByName(name);
+  }
+  
+  async getOrganization(id: string): Promise<OrganizationResponse> {
+    return this.auth0Service.fetchOrganization(id);
+  }
+
+  async patchOrganization(org: OrganizationApiRequest, id: string) {
+    const orgRequest = this.transformer.apiToInternal(org, 'patch');
+    const request = instanceToPlain(orgRequest);
+    return this.auth0Service.sendOrganizationRequest('patch', request, id); 
+  }
+
+  async getOrganizationMembers(orgid: string): Promise<User[]> {
+    const members = this.auth0Service.fetchAllOragnizationMembers(orgid);
+    return members;
   }
 }
 

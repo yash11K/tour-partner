@@ -20,6 +20,7 @@ export class HttpModuleInterceptor implements OnModuleInit {
         startTime = Date.now();
         Logger.log(`Request to: ${config.method.toUpperCase()} ${config.url}`);
         config.headers['Authorization'] = token;
+        Logger.log(config.data);
         return config;
       },
       (error) => {
@@ -30,6 +31,7 @@ export class HttpModuleInterceptor implements OnModuleInit {
     this.httpService.axiosRef.interceptors.response.use(
       (config) => {
         Logger.log(`API call completed in ${Date.now() - startTime} ms`);
+        Logger.log(config.data);
         return config
       },
       (error) => {
