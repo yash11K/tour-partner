@@ -59,16 +59,10 @@ export class ApiController {
     const userId: string = req.user.userId;   
     const orgId: string = req.user.orgId;
 
-    if(role == ROLES.SuperAdmin){
+    if(role == ROLES.SuperAdmin || ROLES.Admin){
       Logger.log('Fetching profile details for SuperAdmin', userId); 
-      const profile = await this.apiService.getSuperAdminProfile(userId,ROLES[role]);
+      const profile = await this.apiService.getProfile(userId, orgId, ROLES[role]);
       return instanceToPlain(profile);
-
-    } else if (role == ROLES.Admin) {
-      Logger.log('Fetching profile details for Admin', userId); 
-      const profile = await this.apiService.getAdminProfile(userId, orgId, ROLES[role]);
-      return instanceToPlain(profile);
-
     } else {
       throw new HttpException({
         status: HttpStatus.FORBIDDEN,

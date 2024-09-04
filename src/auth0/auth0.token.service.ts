@@ -22,7 +22,7 @@ export class TokenService {
       private readonly configService: ConfigService,
   ) {}
 
-  private isTokenExpired(): boolean {
+  public isTokenExpired(): boolean {
     if (!this.tokenExpiresAt){
       Logger.log('Token has expired, refreshing at :' + Date.now().toLocaleString);
       return true;

@@ -16,9 +16,12 @@ export class HttpModuleInterceptor implements OnModuleInit {
     let startTime: number;
     let token = 'Bearer ' + await this.tokenService.getToken();
     this.httpService.axiosRef.interceptors.request.use(
-      (config) => {
+      async (config) => {
         startTime = Date.now();
         Logger.log(`Request to: ${config.method.toUpperCase()} ${config.url}`);
+        if(this.tokenService.isTokenExpired()){
+          token = await this.tokenService.getToken();
+        }
         config.headers['Authorization'] = token;
         Logger.log(config.data);
         return config;

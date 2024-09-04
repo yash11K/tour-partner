@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Auth0Service } from 'src/auth0/auth0.service';
-import { AdminProfile } from './dto/response/Profile.Response';
+import { AdminProfile, Profile } from './dto/response/Profile.Response';
 import { SuperAdminProfile } from "./dto/response/SuperAdminProfile";
 
 @Injectable()
@@ -40,5 +40,18 @@ export class ApiService {
       console.error('Error fetching admin profile:', error);
       throw new Error('Failed to retrieve admin profile');
     }
+  }
+
+  public async getProfile(userId: string, orgId: string, role: string): Promise<Profile>{
+    const [user, organization] = await Promise.all([
+      this.auth0Service.fetchLoggedInUserDetails(userId),
+      this.auth0Service.fetchOrganization(orgId)
+    ]);
+
+    return {
+      user,
+      organization,
+      role
+    };
   }
 }
