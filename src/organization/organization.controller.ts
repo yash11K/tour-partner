@@ -10,8 +10,8 @@ import { ApiResponseError } from 'src/auth0/auth0.dto';
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @ApiBearerAuth('access-token')
-@ApiTags('commons')
-@Controller('organization')
+@ApiTags('organizations')
+@Controller('organizations')
 export class OrganizationController {
   constructor(
     private readonly organizationService: OrganizationService,
