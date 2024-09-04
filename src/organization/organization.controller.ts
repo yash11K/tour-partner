@@ -7,6 +7,7 @@ import { OrganizationApiRequest, OrganizationResponse } from './organization.dto
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { AxiosError } from 'axios';
 import { ApiResponseError } from 'src/auth0/auth0.dto';
+import { User } from 'src/user/user.dto';
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @ApiBearerAuth('access-token')
@@ -49,9 +50,14 @@ export class OrganizationController {
     }
   }
 
+  @ApiOperation({ summary: 'Fetch organization by organization ID'})
+  @ApiResponse({
+    status: 200,
+    type: OrganizationResponse
+  })
   @Permissions('read:organization')
   @Get(':id')
-  public async fetchOrganization(@Param('id') id: string){
+  public async fetchOrganization(@Param('id') id: string): Promise<Record<string,any>>{
     try{
       const _= await this.organizationService.getOrganization(id);
       return instanceToPlain(_);
@@ -65,6 +71,12 @@ export class OrganizationController {
     }
   }
 
+
+  @ApiOperation({ summary: 'Fetch an organization by name'})
+  @ApiResponse({
+    status: 200,
+    type: OrganizationResponse
+  })
   @Permissions('read:organization')
   @Get('/name/:name')
   public async fetchingOrganization(@Param('name') name: string): Promise<Record<string,any>>{
@@ -72,13 +84,41 @@ export class OrganizationController {
     return instanceToPlain(_);
   }
 
-  @ApiBody({ type: OrganizationResponse })
+  @ApiOperation({ summary: 'Update Organization details or Block/Unblock Organizations' })
+  @ApiBody({ 
+    type: OrganizationResponse, 
+    examples: {
+      block: {
+        summary: "Block Organization",
+        description: "Example of a request body to block an organization",
+        value: {
+          name: "acme-corp",
+          metadata: {
+            createdAt: "<date of creation>",  
+            isBlocked: "true"
+          },
+          otherfieldstoChange: "string"
+        }
+      },
+      unblock: {
+        summary: "Unblock Organization",
+        description: "Example of a request body to unblock an organization, NOTE: false/true is a string",
+        value: {
+          name: "acme-corp",
+          metadata: {
+            createdAt: "<date of creation>",  
+            isBlocked: "false"
+          },
+          otherfieldstoChange: "string"
+        },
+      }
+    }
+  })
   @ApiResponse({
     status: 200,
-    description: 'The organization has been successfully created',
+    description: 'The organization has been successfully updated',
     type: OrganizationResponse
   })
-
   @Permissions('edit:organization')
   @Patch(':id')
   public async updateOrg(@Body() body: OrganizationApiRequest, @Param('id') orgId: string): Promise<Record<string,any>> {
@@ -90,6 +130,13 @@ export class OrganizationController {
     else throw new Error("Could not patch organization ${body.name}");
   }
 
+
+
+  @ApiOperation({ summary: 'Fetch members belonging to an organization'})
+  @ApiResponse({
+    status: 200,
+    type: [User]
+  })
   @Permissions('read:organization')
   @Get(':id/members')
   public async fetchOrganizationMembers(@Param('id') orgid: string): Promise<Record<string, string>>{

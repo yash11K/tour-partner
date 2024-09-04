@@ -1,37 +1,42 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    HttpException,
+    HttpStatus,
+    Logger,
+    Post,
+    UnauthorizedException,
+    UseGuards
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Permissions, PermissionsGuard } from './auth';
+import {Auth0Service} from "./auth0/auth0.service";
 
 
-@UseGuards(AuthGuard('jwt'), PermissionsGuard)
+//@UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller()
 export class AppController {
-    constructor(private readonly appService: AppService) { }
+    constructor(private readonly appService: AppService, private readonly auth0Service: Auth0Service) { }
 
     @Get()
     getHello(): string {
-        return this.appService.getHello();
+        return JSON.stringify(this.appService.getHello());
     }
 
-    @Post()
-    sayWhatever(@Body() requestBody: any) {
-        return requestBody;
+    @Get('liveness')
+    liveness(): string{
+        return JSON.stringify('ok => NEW IMAGE');
+    }
+    @Get('readiness')
+    readiness(): string{
+        return JSON.stringify('ok => NEW IMAGE');
     }
 
-    @Get('/api/external')
-    @Permissions('create:organization')
-    sayToAuthenticated() {
-      try{
-        return JSON.stringify('Hey, Super Admin , Welcome to the exclusive page');
-      } catch(error){
-        throw new HttpException({
-          status: HttpStatus.FORBIDDEN,
-          message: 'This page is exclusively for our admins',
-          error: 'FORBIDDEN',
-        }, HttpStatus.FORBIDDEN, {
-          cause: error
-        });
-      }
+    @Get('profile/2')
+    async profile(): Promise<any>{
+       return await this.auth0Service.fetchAllOrganizations();
     }
 }

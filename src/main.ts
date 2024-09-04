@@ -8,7 +8,7 @@ import { Branding } from './organization/organization.dto';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('/api')
+  //app.setGlobalPrefix('/api')
   app.enableCors();
 
   //SwaggerUI
@@ -32,8 +32,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, {
     extraModels: [Profile, SuperAdminProfile, AdminProfile, Branding],
   });
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('swagger', app, document);
 
-  await app.listen(3001);
+  await app.listen(8080);
 }
 bootstrap();
