@@ -12,7 +12,7 @@ export class ApiService {
   public async getSuperAdminProfile(id: string, role: string): Promise<SuperAdminProfile> {
     const [organizations, user] = await Promise.all([
       this.auth0Service.fetchAllOrganizations(),
-      this.auth0Service.fetchLoggedInUserDetails(id),
+      this.auth0Service.fetchUserDetails(id),
     ]);
 
     return {
@@ -25,7 +25,7 @@ export class ApiService {
   public async getAdminProfile(userId: string, orgId: string, role: string): Promise<AdminProfile> {
     try {
       const [user, members, organization] = await Promise.all([
-        this.auth0Service.fetchLoggedInUserDetails(userId),
+        this.auth0Service.fetchUserDetails(userId),
         this.auth0Service.fetchAllOragnizationMembers(orgId),
         this.auth0Service.fetchOrganization(orgId)
       ]);
@@ -44,7 +44,7 @@ export class ApiService {
 
   public async getProfile(userId: string, orgId: string, role: string): Promise<Profile>{
     const [user, organization] = await Promise.all([
-      this.auth0Service.fetchLoggedInUserDetails(userId),
+      this.auth0Service.fetchUserDetails(userId),
       this.auth0Service.fetchOrganization(orgId)
     ]);
 

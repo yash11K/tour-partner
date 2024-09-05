@@ -4,7 +4,7 @@ import { OrganizationApiRequest, OrganizationRequest, OrganizationResponse } fro
 import { instanceToPlain } from 'class-transformer';
 import { OrganizationTransformer } from './organization.transformer';
 import { ApiResponseError as ApiResponseError } from 'src/auth0/auth0.dto';
-import { User } from 'src/user/user.dto';
+import { UserResponse } from 'src/user/user.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -33,7 +33,7 @@ export class OrganizationService {
     return this.auth0Service.sendOrganizationRequest('patch', request, id); 
   }
 
-  async getOrganizationMembers(orgid: string): Promise<User[]> {
+  async getOrganizationMembers(orgid: string): Promise<UserResponse[]> {
     const members = this.auth0Service.fetchAllOragnizationMembers(orgid);
     return members;
   }

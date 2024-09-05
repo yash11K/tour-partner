@@ -2,13 +2,13 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Expose, Type } from "class-transformer";
 import { IsArray } from "class-validator";
 import { OrganizationResponse } from "src/organization/organization.dto";
-import { User } from "src/user/user.dto";
+import { UserResponse } from "src/user/user.dto";
 
 export class Profile {
   @ApiProperty()
   @Expose()
-  @Type(() => User)
-  user: User;
+  @Type(() => UserResponse)
+  user: UserResponse;
 
   @ApiProperty()
   @Expose()
@@ -29,9 +29,9 @@ export class SuperAdminProfile extends Profile {
 }
 
 export class AdminProfile extends Profile {
-  @ApiProperty({type: [User]})
+  @ApiProperty({type: [UserResponse]})
   @Expose()
-  @Type(() => User)
+  @Type(() => UserResponse)
   @IsArray()
-  members: User[];
+  members: UserResponse[];
 }

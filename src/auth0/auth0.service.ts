@@ -1,11 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ROLES } from './auth0.roles.enum';
-import { catchError, lastValueFrom, map, of } from 'rxjs';
+import { lastValueFrom, map } from 'rxjs';
 import { ApiResponseError as ApiResponseError, EndpointOptions } from './auth0.dto';
-import { User } from 'src/user/user.dto';
 import { OrganizationResponse } from 'src/organization/organization.dto';
-import { plainToInstance } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { RoleAssignRequest, UserRequest, UserResponse } from 'src/user/user.dto';
 
 @Injectable()
 export class Auth0Service{
@@ -74,17 +74,17 @@ export class Auth0Service{
     return plainToInstance(OrganizationResponse, _);
   }
 
-  public async fetchLoggedInUserDetails(_id: string): Promise<User>{
+  public async fetchUserDetails(_id: string): Promise<UserResponse>{
     const endpoint = this.endpointProvider('users/:id', { pathParams: {id: _id }});
-    const user = await lastValueFrom(this.httpService.get<User>(endpoint).pipe(
+    const user = await lastValueFrom(this.httpService.get<UserResponse>(endpoint).pipe(
       map(res => res.data),
     ));
     return user;
   }
 
-  public async fetchAllOragnizationMembers(organizationId: string): Promise<User[]> {
+  public async fetchAllOragnizationMembers(organizationId: string): Promise<UserResponse[]> {
     const endpoint = this.endpointProvider('organizations/:id/members', {pathParams: {id: organizationId}});
-    const members = await lastValueFrom(this.httpService.get<User[]>(endpoint).pipe(
+    const members = await lastValueFrom(this.httpService.get<UserResponse[]>(endpoint).pipe(
       map(res => res.data),
     ));
       return members;
@@ -115,5 +115,25 @@ export class Auth0Service{
       }catch(error){
         throw error;
       }
+  }
+
+  //USERS
+  
+  public async postUser(user: UserRequest){
+    const endpoint = this.endpointProvider('users');
+    let reqBody = instanceToPlain(user);
+    let response = await lastValueFrom(this.httpService.post<UserResponse>(endpoint, reqBody).pipe(
+      map(res => res.data),
+    ));
+    return response;
+  }
+
+  public async assignRolesToUser(roleRequest: RoleAssignRequest){
+    const endpoint = this.endpointProvider('organizations/:orgId/members/:userId/roles', { pathParams: { orgId: roleRequest.orgId, userId: roleRequest.userId}});
+    const body = {roles: [roleRequest.role]};
+    const statusCode = await lastValueFrom(this.httpService.post<void>(endpoint, body).pipe(
+      map(res => res.status)
+    ));
+    return statusCode;
   }
 }

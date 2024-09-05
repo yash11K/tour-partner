@@ -1,13 +1,13 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Permissions, PermissionsGuard } from 'src/auth';
 import { OrganizationService } from './organization.service';
 import { OrganizationApiRequest, OrganizationResponse } from './organization.dto';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import { AxiosError } from 'axios';
 import { ApiResponseError } from 'src/auth0/auth0.dto';
-import { User } from 'src/user/user.dto';
+import { UserResponse } from 'src/user/user.dto';
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @ApiBearerAuth('access-token')
@@ -130,12 +130,10 @@ export class OrganizationController {
     else throw new Error("Could not patch organization ${body.name}");
   }
 
-
-
   @ApiOperation({ summary: 'Fetch members belonging to an organization'})
   @ApiResponse({
     status: 200,
-    type: [User]
+    type: [UserResponse]
   })
   @Permissions('read:organization')
   @Get(':id/members')

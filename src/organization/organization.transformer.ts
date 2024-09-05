@@ -14,26 +14,6 @@ export class OrganizationTransformer {
     },
   ];
 
-
-//  public apiToInteranl(org: OrganizationApiRequest): OrganizationRequest {
-//     const defaultMetaData: Record<string,string> = {
-//      isBlocked: 'false',
-//      createdAt: new Date().toDateString(),
-//    };
-//    let branding = new Branding();
-//    branding.logoUrl = org.logo;
-//    let orgReq = new OrganizationRequest();
-//    orgReq.name = org.name;
-//    orgReq.branding = branding;
-//    orgReq.displayName = org.displayName;
-//    orgReq.enabledConnections = this.connection;
-//    if(org.metadata){
-//      orgReq.metadata = {...defaultMetaData, ...org.metadata}; 
-//    } else{
-//      orgReq.metadata = defaultMetaData;
-//    }
-//    return orgReq;
-//  }
   public apiToInternal(org: OrganizationApiRequest, method: 'post' | 'patch'): OrganizationRequest {
     const defaultMetaData: Record<string, string> = {
       isBlocked: 'false',

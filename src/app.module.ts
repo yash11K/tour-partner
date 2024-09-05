@@ -13,6 +13,7 @@ import { TokenService } from './auth0/auth0.token.service';
 import { OrganizationModule } from './organization/organization.module';
 import { ErrorInterceptor } from './http-module/http-module.error.interceptor';
 import { GlobalExceptionFilter } from './globl.exception.interceptor';
+import { UserModule } from './user/user.module';
 
 @Module({
   controllers: [AppController],
@@ -36,7 +37,7 @@ import { GlobalExceptionFilter } from './globl.exception.interceptor';
   ],
   imports: [ConfigModule.forRoot({
     isGlobal: true,
-  }), JwtAuthModule, ApiModule, Auth0Module, HttpModule, OrganizationModule],
+  }), JwtAuthModule, ApiModule, Auth0Module, HttpModule, OrganizationModule, UserModule],
 })
 export class AppModule {
 }
