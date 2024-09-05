@@ -151,7 +151,7 @@ export class Auth0Service{
   }
 
   public async assignRolesToUser(roleRequest: RoleAssignRequest){
-    const endpoint = this.endpointProvider('organizations/:orgId/members/:userId/roles', { pathParams: { orgId: roleRequest.orgId, userId: roleRequest.userId}});
+    const endpoint = this.endpointProvider('organizations/:orgId/members/:userId/roles', { pathParams: { orgId: roleRequest.orgId, userId: decodeURIComponent(roleRequest.userId)}});
     const body = {roles: [roleRequest.role]};
     const statusCode = await lastValueFrom(this.httpService.post<void>(endpoint, body).pipe(
       map(res => res.status)

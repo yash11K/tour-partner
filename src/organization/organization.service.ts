@@ -8,7 +8,6 @@ import { UserResponse } from 'src/user/user.dto';
 
 @Injectable()
 export class OrganizationService {
-
   constructor(
     private readonly auth0Service: Auth0Service,
     private readonly transformer: OrganizationTransformer
@@ -43,5 +42,10 @@ export class OrganizationService {
     const members = await this.auth0Service.fetchAllOragnizationMembers(orgid);
     return members;
   }
+
+  async getAllOrganizations() {
+    return await this.auth0Service.fetchAllOrganizations();
+  }
+
 }
 

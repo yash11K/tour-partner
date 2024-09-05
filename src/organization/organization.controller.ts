@@ -22,11 +22,8 @@ export class OrganizationController {
 
   @Get()
   public async fetchAllorganizations(@Req() req:any){
-    const permissions: string[] = req.user.permissions;
-    if(this.auth0Servcie.rolesDilator(req.permissions)){
-
-    }
-    //const _= this.organizationService.getAllOrganizations();
+    const _= await this.organizationService.getAllOrganizations();
+    return _;
   }
 
   @ApiOperation({ summary: 'Register a new organization' })

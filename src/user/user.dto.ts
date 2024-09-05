@@ -163,10 +163,6 @@ export class UserRequest {
   @ApiProperty()
   @Expose({ name: 'username' })
   username: string;
-
-  @ApiProperty()
-  @Expose()
-  roles?: string;
 }
 
 export class RoleAssignRequest{

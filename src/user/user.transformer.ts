@@ -6,7 +6,6 @@ export class UserTransformer{
     user.name = user.givenName + + ' '+  user.familyName;
     user.emailVerified = false;
     user.phoneVerified = false;
-    user.userId = user.email;
     user.connection = 'Username-Password-Authentication'
     user.verifyEmail = true;
     return user;
