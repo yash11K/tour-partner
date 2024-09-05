@@ -20,21 +20,27 @@ export class OrganizationService {
     return await this.auth0Service.sendOrganizationRequest('post', request);
   }
   async getOrganizationByName(name: string): Promise<OrganizationResponse> {
-    return this.auth0Service.fetchOrganizationByName(name);
+    return await this.auth0Service.fetchOrganizationByName(name);
   }
   
   async getOrganization(id: string): Promise<OrganizationResponse> {
-    return this.auth0Service.fetchOrganization(id);
+    return await this.auth0Service.fetchOrganization(id);
   }
 
   async patchOrganization(org: OrganizationApiRequest, id: string) {
     const orgRequest = this.transformer.apiToInternal(org, 'patch');
     const request = instanceToPlain(orgRequest);
-    return this.auth0Service.sendOrganizationRequest('patch', request, id); 
+    if (org.metadata.isBlocked == 'true') {
+     await this.auth0Service.deleteOrganizationConnection(id); 
+    } else if(org.metadata.isBlocked == 'false'){
+      await this.auth0Service.assignOrganizationConnection(id);
+    }
+    const _= await this.auth0Service.sendOrganizationRequest('patch', request, id); 
+    return _;
   }
 
   async getOrganizationMembers(orgid: string): Promise<UserResponse[]> {
-    const members = this.auth0Service.fetchAllOragnizationMembers(orgid);
+    const members = await this.auth0Service.fetchAllOragnizationMembers(orgid);
     return members;
   }
 }

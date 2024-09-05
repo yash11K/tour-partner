@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ROLES } from './auth0.roles.enum';
-import { lastValueFrom, map } from 'rxjs';
+import { last, lastValueFrom, map } from 'rxjs';
 import { ApiResponseError as ApiResponseError, EndpointOptions } from './auth0.dto';
 import { OrganizationResponse } from 'src/organization/organization.dto';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
@@ -10,6 +10,7 @@ import { RoleAssignRequest, UserRequest, UserResponse } from 'src/user/user.dto'
 @Injectable()
 export class Auth0Service{
   private readonly domain: string = process.env.AUTH0_DOMAIN;
+  private readonly connectionId: string = 'con_41JuBNf01LoFW24o';
   constructor(
     private readonly httpService: HttpService,
   ){};
@@ -115,6 +116,27 @@ export class Auth0Service{
       }catch(error){
         throw error;
       }
+  }
+
+  public async assignOrganizationConnection(id: string) {
+    const endpoint = this.endpointProvider('organizations/:orgId/enabled_connections', {pathParams: {orgId: id}})
+    const body = {
+      connection_id: this.connectionId,
+      assign_membership_on_login: true,
+      is_signup_enabled: true,
+      show_as_button: true,
+    }
+    const response = await lastValueFrom(this.httpService.post<any>(endpoint, body).pipe(
+      map(res => res.data)
+    ));
+    return response;
+  }
+
+  public async deleteOrganizationConnection(id: string) {
+    const endpoint = this.endpointProvider('organizations/:orgId/enabled_connections/:connId', { pathParams: { orgId: id, connId: this.connectionId}})
+    const status = await lastValueFrom(this.httpService.delete<void>(endpoint).pipe(
+      map(res => res.data))
+    );
   }
 
   //USERS

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Permissions, PermissionsGuard } from 'src/auth';
@@ -8,6 +8,7 @@ import { instanceToPlain } from 'class-transformer';
 import { AxiosError } from 'axios';
 import { ApiResponseError } from 'src/auth0/auth0.dto';
 import { UserResponse } from 'src/user/user.dto';
+import { Auth0Service } from 'src/auth0/auth0.service';
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @ApiBearerAuth('access-token')
@@ -16,7 +17,17 @@ import { UserResponse } from 'src/user/user.dto';
 export class OrganizationController {
   constructor(
     private readonly organizationService: OrganizationService,
+    private readonly auth0Servcie: Auth0Service,
   ){}
+
+  @Get()
+  public async fetchAllorganizations(@Req() req:any){
+    const permissions: string[] = req.user.permissions;
+    if(this.auth0Servcie.rolesDilator(req.permissions)){
+
+    }
+    //const _= this.organizationService.getAllOrganizations();
+  }
 
   @ApiOperation({ summary: 'Register a new organization' })
   @ApiBody({ type: OrganizationApiRequest })
@@ -33,7 +44,7 @@ export class OrganizationController {
   @Permissions('create:organization')
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  public async registerNewOrg(@Body() body: OrganizationApiRequest): Promise<Record<string, any>> {
+  public async registerNewOrg(@Body() body: OrganizationApiRequest, @Req() req:any): Promise<Record<string, any>> {
     try {
       const response = await this.organizationService.postOrganization(body);
       if (response === 201) {

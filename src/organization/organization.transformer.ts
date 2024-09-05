@@ -1,4 +1,3 @@
-import moment from "moment";
 import { Branding, OrganizationApiRequest, OrganizationRequest } from "./organization.dto";
 import { log } from "console";
 import { plainToInstance } from "class-transformer";
