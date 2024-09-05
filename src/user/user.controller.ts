@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { Permissions, PermissionsGuard } from 'src/auth';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -54,6 +54,21 @@ export class UserController {
       role: 'rol_k6rL1bL7wv3EqVGT',
     }
     await this.auth0Service.assignOrganization(id, userResponse.userId);
+    await this.auth0Service.assignRolesToUser(rolesRequest);
+  }
+
+  @ApiOperation({ summary: 'Registers a new member with the organization tourAdmin is logged in' })
+  @Permissions('create:members')
+  @Post('tours/members')
+  async postTourMembers(@Body() user: UserRequest, @Req() req: any){
+    let userResponse = await this.userService.registerUser(plainToInstance(UserRequest, user));
+    userResponse = plainToInstance(UserResponse, userResponse);
+    let rolesRequest: RoleAssignRequest = {
+      orgId: req.user.orgId,
+      userId: userResponse.userId,
+      role: 'rol_A0QFQM4Lr5mYQtZD',
+    }
+    await this.auth0Service.assignOrganization(rolesRequest.orgId, userResponse.userId);
     await this.auth0Service.assignRolesToUser(rolesRequest);
   }
 }
