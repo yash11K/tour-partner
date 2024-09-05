@@ -158,4 +158,15 @@ export class Auth0Service{
     ));
     return statusCode;
   }
+
+  public async assignOrganization(orgId: string, userId: string) {
+    const endpoint = this.endpointProvider('organizations/:id/members', {pathParams: {id: orgId}});
+    const body = {
+      members: [userId]
+    }
+    const statusCode = await lastValueFrom(this.httpService.post<void>(endpoint, body).pipe(
+      map(res => res.status)
+    ));
+    return statusCode;
+  }
 }

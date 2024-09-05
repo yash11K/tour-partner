@@ -27,17 +27,33 @@ export class UserController {
 
   @ApiOperation({ summary: 'Register a new super-admin'})
   @Permissions('create:organization')
-  @Post('bu')
+  @Post('abg/admins')
   async postUser(@Body() user: UserRequest): Promise<Record<string,any>>{
     let userResponse = await this.userService.registerUser(plainToInstance(UserRequest, user));
     userResponse = plainToInstance(UserResponse,userResponse);
     let rolesRequest: RoleAssignRequest = {
       orgId : 'org_6ly0QWO8YsINWH7b',
-      userId: decodeURIComponent(userResponse.userId),
-      role: 'rol_k6rL1bL7wv3EqVGT',
+      userId: userResponse.userId,
+      role: 'rol_i3Buefby1WswZafK',
 
     }
+    await this.auth0Service.assignOrganization('org_6ly0QWO8YsINWH7b',userResponse.userId);
     await this.auth0Service.assignRolesToUser(rolesRequest);
     return user;
+  }
+
+  @ApiOperation({ summary: 'Registers a new tour-admin with a particular organization' })
+  @Permissions('create:organization')
+  @Post('tours/:id/admins')
+  async postTourAdmin(@Body() user: UserRequest, @Param('id') id: string){
+    let userResponse = await this.userService.registerUser(plainToInstance(UserRequest, user));
+    userResponse = plainToInstance(UserResponse, userResponse);
+    let rolesRequest: RoleAssignRequest = {
+      orgId: id,
+      userId: userResponse.userId,
+      role: 'rol_k6rL1bL7wv3EqVGT',
+    }
+    await this.auth0Service.assignOrganization(id, userResponse.userId);
+    await this.auth0Service.assignRolesToUser(rolesRequest);
   }
 }
