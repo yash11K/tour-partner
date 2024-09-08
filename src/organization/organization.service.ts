@@ -44,8 +44,7 @@ export class OrganizationService {
   }
 
   async getAllOrganizations() {
-    return await this.auth0Service.fetchAllOrganizations();
+    const _ = await this.auth0Service.fetchAllOrganizations();
+    return instanceToPlain(_);
   }
-
 }
-

@@ -143,8 +143,8 @@ export class Auth0Service{
   
   public async postUser(user: UserRequest){
     const endpoint = this.endpointProvider('users');
-    let reqBody = instanceToPlain(user);
-    let response = await lastValueFrom(this.httpService.post<UserResponse>(endpoint, reqBody).pipe(
+    let body = instanceToPlain(user);
+    let response = await lastValueFrom(this.httpService.post<UserResponse>(endpoint, body).pipe(
       map(res => res.data),
     ));
     return response;
@@ -168,5 +168,13 @@ export class Auth0Service{
       map(res => res.status)
     ));
     return statusCode;
+  }
+  public async patchUser(user: UserRequest) {
+    const endpoint = this.endpointProvider('user');
+    let body = instanceToPlain(user);
+    let response = await lastValueFrom(this.httpService.patch(endpoint, body).pipe(
+      map(res => res.data)
+    ));
+    return response;
   }
 }

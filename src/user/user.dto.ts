@@ -98,11 +98,11 @@ export class UserResponse {
 export class UserRequest {
   @ApiProperty()
   @Expose({ name: 'email' })
-  email: string;
+  email?: string;
 
   @ApiProperty()
   @Expose({ name: 'phone_number' })
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @ApiProperty()
   @Expose({ name: 'user_metadata' })
@@ -126,11 +126,11 @@ export class UserRequest {
 
   @ApiProperty()
   @Expose({ name: 'given_name' })
-  givenName: string;
+  givenName?: string;
 
   @ApiProperty()
   @Expose({ name: 'family_name' })
-  familyName: string;
+  familyName?: string;
 
   @ApiProperty()
   @Expose({ name: 'name' })
@@ -146,7 +146,7 @@ export class UserRequest {
 
   @ApiProperty()
   @Expose({ name: 'user_id' })
-  userId: string;
+  userId?: string;
 
   @ApiProperty()
   @Expose({ name: 'connection' })
@@ -154,7 +154,7 @@ export class UserRequest {
 
   @ApiProperty()
   @Expose({ name: 'password' })
-  password: string;
+  password?: string;
 
   @ApiProperty()
   @Expose({ name: 'verify_email' })
@@ -162,7 +162,7 @@ export class UserRequest {
 
   @ApiProperty()
   @Expose({ name: 'username' })
-  username: string;
+  username?: string;
 }
 
 export class RoleAssignRequest{

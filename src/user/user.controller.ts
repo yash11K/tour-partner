@@ -10,7 +10,7 @@ import { Auth0Service } from 'src/auth0/auth0.service';
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @ApiBearerAuth('access-token')
 @ApiTags('users')
-@Controller('users')
+@Controller()
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -70,5 +70,20 @@ export class UserController {
     }
     await this.auth0Service.assignOrganization(rolesRequest.orgId, userResponse.userId);
     await this.auth0Service.assignRolesToUser(rolesRequest);
+    return userResponse;
+  }
+
+  @ApiOperation({ summary: 'Updates a tour member with the organization tourAdmin is logged in from' })
+  @Permissions('edit:members')
+  @Post('tours/members')
+  async updatesTourMembers(@Body() user: UserRequest){
+    return await this.userService.updateUser(plainToInstance(UserRequest, user));
+  }
+
+  @ApiOperation({ summary: 'Updates a tour admin' })
+  @Permissions('create:organization')
+  @Post('tours/admins')
+  async updatesTourAgent(@Body() user: UserRequest){
+    return await this.userService.updateUser(plainToInstance(UserRequest, user));
   }
 }

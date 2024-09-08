@@ -17,4 +17,8 @@ export class UserService {
     user = this.transformer.apiToInternal(user);
     return await this.auth0Service.postUser(user);
   }
+
+  async updateUser(user: UserRequest) {
+    return await this.auth0Service.patchUser(user);
+  }
 }
