@@ -9,41 +9,37 @@ import {
   Param,
   Patch,
   Post,
-  Req,
-  UseGuards
-} from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
-import { Permissions, PermissionsGuard } from "src/auth";
-import { OrganizationService } from "./organization.service";
-import { OrganizationApiRequest, OrganizationResponse } from "./organization.dto";
-import { instanceToPlain } from "class-transformer";
-import { AxiosError } from "axios";
-import { ApiResponseError } from "src/auth0/auth0.dto";
-import { UserResponse } from "src/user/user.dto";
-import { Auth0Service } from "src/auth0/auth0.service";
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Permissions, PermissionsGuard } from 'src/auth';
+import { OrganizationService } from './organization.service';
+import {
+  OrganizationApiRequest,
+  OrganizationResponse,
+} from './organization.dto';
+import { instanceToPlain } from 'class-transformer';
+import { AxiosError } from 'axios';
+import { ApiResponseError } from 'src/auth0/auth0.dto';
+import { UserResponse } from 'src/user/user.dto';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiResponse,
-  ApiTag,
-} from"@nestjs/swagger"';
+  ApiTags,
+} from '@nestjs/swagger';
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @ApiBearerAuth('access-token')
 @ApiTags('organizations')
 @Controller('organizations')
 export class OrganizationController {
-  constructor(
-    private readonly organizationService: OrganizationService,
-    private readonly auth0Servcie: Auth0Service,
-  ) {
-  }
+  constructor(private readonly organizationService: OrganizationService) {}
 
   @Get()
-  public async fetchAllorganizations(@Req() req: any) {
-    const _ = await this.organizationService.getAllOrganizations();
-    return _;
+  public async fetchOrganizations() {
+    return await this.organizationService.getAllOrganizations();
   }
 
   @ApiOperation({ summary: 'Register a new organization' })
@@ -51,19 +47,18 @@ export class OrganizationController {
   @ApiResponse({
     status: 201,
     description: 'The organization has been successfully created.',
-    type: OrganizationResponse
+    type: OrganizationResponse,
   })
   @ApiResponse({
     status: 400,
     description: 'Bad Request or any other error',
-    type: ApiResponseError
+    type: ApiResponseError,
   })
   @Permissions('create:organization')
   @HttpCode(HttpStatus.CREATED)
   @Post()
   public async registerNewOrg(
     @Body() body: OrganizationApiRequest,
-    @Req() req: any
   ): Promise<Record<string, any>> {
     try {
       const response = await this.organizationService.postOrganization(body);
@@ -78,22 +73,22 @@ export class OrganizationController {
       } else {
         Logger.error('Error in registerNewOrg:', error);
         return new HttpException(
-          "An unexpected error occurred",
-          HttpStatus.INTERNAL_SERVER_ERROR
+          'An unexpected error occurred',
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
   }
 
-  @ApiOperation({ summary: "Fetch organization by organization ID" })
+  @ApiOperation({ summary: 'Fetch organization by organization ID' })
   @ApiResponse({
     status: 200,
-    type: OrganizationResponse
+    type: OrganizationResponse,
   })
   @Permissions('read:organization')
   @Get(':id')
   public async fetchOrganization(
-    @Param("id") id: string
+    @Param('id') id: string,
   ): Promise<Record<string, any>> {
     try {
       const _ = await this.organizationService.getOrganization(id);
@@ -104,56 +99,56 @@ export class OrganizationController {
       } else {
         Logger.error('Error in fetchingOrganization', error);
         throw new HttpException(
-          "An unexpected error occurred",
-          HttpStatus.INTERNAL_SERVER_ERROR
+          'An unexpected error occurred',
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
   }
 
-  @ApiOperation({ summary: "Fetch an organization by name" })
+  @ApiOperation({ summary: 'Fetch an organization by name' })
   @ApiResponse({
     status: 200,
-    type: OrganizationResponse
+    type: OrganizationResponse,
   })
   @Permissions('read:organization')
   @Get('/name/:name')
   public async fetchingOrganization(
-    @Param("name") name: string
+    @Param('name') name: string,
   ): Promise<Record<string, any>> {
     const _ = await this.organizationService.getOrganizationByName(name);
     return instanceToPlain(_);
   }
 
   @ApiOperation({
-    summary: "Update Organization details or Block/Unblock Organizations"
+    summary: 'Update Organization details or Block/Unblock Organizations',
   })
   @ApiBody({
     type: OrganizationResponse,
     examples: {
       block: {
-        summary: "Block Organization",
-        description: "Example of a request body to block an organization",
+        summary: 'Block Organization',
+        description: 'Example of a request body to block an organization',
         value: {
-          name: "acme-corp",
+          name: 'acme-corp',
           metadata: {
-            createdAt: "<date of creation>",
-            isBlocked: "true"
+            createdAt: '<date of creation>',
+            isBlocked: 'true',
           },
-          otherfieldstoChange: "string"
+          otherfieldstoChange: 'string',
         },
       },
       unblock: {
-        summary: "Unblock Organization",
+        summary: 'Unblock Organization',
         description:
-          "Example of a request body to unblock an organization, NOTE: false/true is a string",
+          'Example of a request body to unblock an organization, NOTE: false/true is a string',
         value: {
-          name: "acme-corp",
+          name: 'acme-corp',
           metadata: {
-            createdAt: "<date of creation>",
-            isBlocked: "false"
+            createdAt: '<date of creation>',
+            isBlocked: 'false',
           },
-          otherfieldstoChange: "string"
+          otherfieldstoChange: 'string',
         },
       },
     },
@@ -161,34 +156,34 @@ export class OrganizationController {
   @ApiResponse({
     status: 200,
     description: 'The organization has been successfully updated',
-    type: OrganizationResponse
+    type: OrganizationResponse,
   })
   @Permissions('edit:organization')
   @Patch(':id')
   public async updateOrg(
     @Body() body: OrganizationApiRequest,
-    @Param("id") orgId: string
+    @Param('id') orgId: string,
   ): Promise<Record<string, any>> {
     const response = await this.organizationService.patchOrganization(
       body,
-      orgId
+      orgId,
     );
     if (response === 200) {
       const org: OrganizationResponse =
         await this.organizationService.getOrganizationByName(body.name);
       return instanceToPlain(org);
-    } else throw new Error("Could not patch organization ${body.name}");
+    } else throw new Error('Could not patch organization ${body.name}');
   }
 
-  @ApiOperation({ summary: "Fetch members belonging to an organization" })
+  @ApiOperation({ summary: 'Fetch members belonging to an organization' })
   @ApiResponse({
     status: 200,
-    type: [UserResponse]
+    type: [UserResponse],
   })
   @Permissions('read:organization')
   @Get(':id/members')
   public async fetchOrganizationMembers(
-    @Param("id") orgid: string
+    @Param('id') orgid: string,
   ): Promise<Record<string, string>> {
     const response =
       await this.organizationService.getOrganizationMembers(orgid);

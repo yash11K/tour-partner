@@ -1,7 +1,8 @@
-import { HttpService } from "@nestjs/axios";
-import { Injectable, Logger } from "@nestjs/common";
-import { lastValueFrom } from "rxjs";
-import { Auth0Config, TokenRequest } from "./auth0.dto";
+import { HttpService } from '@nestjs/axios';
+import { Injectable, Logger } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
+import { Auth0Config, TokenRequest } from './auth0.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TokenService {
@@ -20,7 +21,7 @@ export class TokenService {
 
   constructor(
     private readonly httpService: HttpService,
-    private readonly configService: ConfigServic,
+    private readonly configService: ConfigService,
   ) {}
 
   public isTokenExpired(): boolean {
@@ -53,7 +54,7 @@ export class TokenService {
       clientSecret: this.auth0Config.clientSecret,
       clientId: this.auth0Config.clientId,
       grantType: this.auth0Config.grantType,
-      audience:"https://"' + this.auth0Config.domain +"/api/v2/",
+      audience: 'https://' + this.auth0Config.domain + '/api/v2/',
     };
 
     Logger.log('Calling Token API');

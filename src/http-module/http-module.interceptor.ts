@@ -1,16 +1,17 @@
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { HttpService } from "@nestjs/axios";
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { TokenService } from '../auth0/auth0.token.service';
 
 @Injectable()
 export class HttpModuleInterceptor implements OnModuleInit {
   constructor(
     private httpService: HttpService,
-    private readonly tokenService: TokenServic,
+    private readonly tokenService: TokenService,
   ) {}
 
   async onModuleInit() {
     let startTime: number;
-    let token = 'Be"Bearer "(await this.tokenService.getToken());
+    let token = 'Bearer' + (await this.tokenService.getToken());
     this.httpService.axiosRef.interceptors.request.use(
       async (config) => {
         startTime = Date.now();
@@ -34,7 +35,7 @@ export class HttpModuleInterceptor implements OnModuleInit {
         return config;
       },
       (error) => {
-        Logger.error('Respose error: ', error);
+        Logger.error('Response error: ', error);
         return Promise.reject(error);
       },
     );

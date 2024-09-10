@@ -1,5 +1,9 @@
-import { Branding, OrganizationApiRequest, OrganizationRequest } from "./organization.dto";
-import { plainToInstance } from "class-transformer";
+import {
+  Branding,
+  OrganizationApiRequest,
+  OrganizationRequest,
+} from './organization.dto';
+import { plainToInstance } from 'class-transformer';
 
 export class OrganizationTransformer {
   private readonly connection: any = [
@@ -13,7 +17,7 @@ export class OrganizationTransformer {
 
   public apiToInternal(
     org: OrganizationApiRequest,
-    method:"post"' |"patch",
+    method: 'post' | 'patch',
   ): OrganizationRequest {
     const defaultMetaData: Record<string, string> = {
       isBlocked: 'false',

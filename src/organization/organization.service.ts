@@ -7,13 +7,14 @@ import {
 import { instanceToPlain } from 'class-transformer';
 import { OrganizationTransformer } from './organization.transformer';
 import { User } from 'src/user/user.dto';
+import { UserTransformer } from '../user/user.transformer';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly auth0Service: Auth0Service,
     private readonly transformer: OrganizationTransformer,
-    private readonly userTransformer: UserTransforme,
+    private readonly userTransformer: UserTransformer,
   ) {}
 
   async postOrganization(org: OrganizationApiRequest): Promise<number> {
@@ -37,19 +38,17 @@ export class OrganizationService {
     } else if (org.metadata.isBlocked == 'false') {
       await this.auth0Service.assignOrganizationConnection(id);
     }
-    const _ = await this.auth0Service.sendOrganizationRequest(
+    return await this.auth0Service.sendOrganizationRequest(
       'patch',
       request,
       id,
     );
-    return _;
   }
 
   async getOrganizationMembers(orgid: string): Promise<User[]> {
-    const members = (
-      await this.auth0Service.fetchAllOragnizationMembers(orgid)
-    ).map(this.userTransformer.internalToApi);
-    return members;
+    return (await this.auth0Service.fetchAllOragnizationMembers(orgid)).map(
+      this.userTransformer.internalToApi,
+    );
   }
 
   async getAllOrganizations() {

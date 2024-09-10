@@ -1,13 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
   HttpException,
   HttpStatus,
-  Logge,
-} from"@nestjs/common"';
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 
 @Injectable()
 @Catch()
@@ -31,7 +31,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       statusCode: status,
       message: message,
       timestamp: new Date().toISOString(),
-      path: request.url
+      path: request.url,
     });
   }
 }

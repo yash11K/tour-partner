@@ -5,11 +5,11 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-  NestInterceptor
-} from "@nestjs/common";
-import { Observable, throwError } from "rxjs";
-import { catchError } from "rxjs/operators";
-import { AxiosError } from "axios";
+  NestInterceptor,
+} from '@nestjs/common';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { AxiosError } from 'axios';
 
 @Injectable()
 export class ErrorInterceptor implements NestInterceptor {
@@ -20,25 +20,25 @@ export class ErrorInterceptor implements NestInterceptor {
           // If it's an HTTP error response (4xx, 5xx)
           const message = error.response.data;
           return throwError(
-            () => new HttpException(message, error.response.status,
+            () => new HttpException(message, error.response.status),
           );
         } else if (error.request) {
           Logger.error('No response received:', error.request);
           return throwError(
             () =>
               new HttpException(
-                "No response from server",
-                HttpStatus.BAD_GATEWAY
-              )
+                'No response from server',
+                HttpStatus.BAD_GATEWAY,
+              ),
           );
         } else {
           Logger.error('Error setting up the request:', error.message);
           return throwError(
             () =>
               new HttpException(
-                "Request setup error",
-                HttpStatus.INTERNAL_SERVER_ERROR
-              )
+                'Request setup error',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              ),
           );
         }
       }),

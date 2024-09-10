@@ -1,20 +1,28 @@
-import { Controller, Get, HttpException, HttpStatus, Logger, Req, UseGuards } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
-import { ROLES } from "src/auth0/auth0.roles.enum";
-import { Auth0Service } from "src/auth0/auth0.service";
-import { ApiService } from "./api.service";
-import { PermissionsGuard } from "src/auth";
-import { AdminProfile } from "./dto/response/Profile.Response";
-import { SuperAdminProfile } from "./dto/response/SuperAdminProfile";
-import { instanceToPlain } from "class-transformer";
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ROLES } from 'src/auth0/auth0.roles.enum';
+import { Auth0Service } from 'src/auth0/auth0.service';
+import { ApiService } from './api.service';
+import { PermissionsGuard } from 'src/auth';
+import { AdminProfile } from './dto/response/Profile.Response';
+import { SuperAdminProfile } from './dto/response/SuperAdminProfile';
+import { instanceToPlain } from 'class-transformer';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
-  getSchemaPat,
-} from"@nestjs/swagger"';
+  getSchemaPath,
+} from '@nestjs/swagger';
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @ApiBearerAuth('access-token')
@@ -24,10 +32,9 @@ export class ApiController {
   constructor(
     private readonly auth0Service: Auth0Service,
     private readonly apiService: ApiService,
-  ) {
-  }
+  ) {}
 
-  @ApiOperation({ summary: "get user profile based on role" })
+  @ApiOperation({ summary: 'get user profile based on role' })
   @ApiResponse({
     status: 200,
     description: 'Profile retrieved successfully',
@@ -36,13 +43,13 @@ export class ApiController {
         schema: {
           oneOf: [
             { $ref: getSchemaPath(SuperAdminProfile) },
-            { $ref: getSchemaPath(AdminProfile) }
+            { $ref: getSchemaPath(AdminProfile) },
           ],
           discriminator: {
             propertyName: 'role',
             mapping: {
               [ROLES.SuperAdmin]: getSchemaPath(SuperAdminProfile),
-              [ROLES.Admin]: getSchemaPath(AdminProfile)
+              [ROLES.Admin]: getSchemaPath(AdminProfile),
             },
           },
         },
@@ -51,7 +58,7 @@ export class ApiController {
   })
   @ApiResponse({
     status: 403,
-    description: "Forbidden: Roles are not configured"
+    description: 'Forbidden: Roles are not configured',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get('profile')
@@ -71,23 +78,23 @@ export class ApiController {
     const orgId: string = req.user.orgId;
 
     if (role == ROLES.SuperAdmin || ROLES.Admin) {
-      Logger.log("Fetching profile details for SuperAdmin", userId);
+      Logger.log('Fetching profile details for SuperAdmin', userId);
       const profile = await this.apiService.getProfile(
         userId,
         orgId,
-        ROLES[role]
+        ROLES[role],
       );
       return instanceToPlain(profile);
     } else {
       throw new HttpException(
         {
           status: HttpStatus.FORBIDDEN,
-          error: "Roles are not configured for you, Please contact ABG Admin."
+          error: 'Roles are not configured for you, Please contact ABG Admin.',
         },
         HttpStatus.FORBIDDEN,
         {
-          cause: "Roles Undefined"
-        }
+          cause: 'Roles Undefined',
+        },
       );
     }
   }
