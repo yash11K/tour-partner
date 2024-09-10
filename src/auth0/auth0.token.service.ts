@@ -1,30 +1,33 @@
-import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { lastValueFrom } from 'rxjs';
-import { Auth0Config, TokenRequest } from './auth0.dto';
+import { HttpService } from "@nestjs/axios";
+import { Injectable, Logger } from "@nestjs/common";
+import { lastValueFrom } from "rxjs";
+import { Auth0Config, TokenRequest } from "./auth0.dto";
 
 @Injectable()
 export class TokenService {
-  private readonly auth0Config : Auth0Config = this.configService.get<Auth0Config>('auth0', {
-    domain: process.env.AUTH0_DOMAIN,
-    clientId: process.env.AUTH0_CLIENT_ID,
-    clientSecret: process.env.AUTH0_CLIENT_SECRET,
-    grantType: process.env.AUTH0_GRANT_TYPE,
-  });
-  private readonly tokenUrl: string = 'https://' + this.auth0Config.domain + '/oauth/token';
+  private readonly auth0Config: Auth0Config =
+    this.configService.get<Auth0Config>('auth0', {
+      domain: process.env.AUTH0_DOMAIN,
+      clientId: process.env.AUTH0_CLIENT_ID,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET,
+      grantType: process.env.AUTH0_GRANT_TYPE,
+    });
+  private readonly tokenUrl: string =
+    'https://' + this.auth0Config.domain + '/oauth/token';
 
   private tokenExpiresAt: Date;
   private token: string;
 
-    constructor(
-      private readonly httpService: HttpService,
-      private readonly configService: ConfigService,
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigServic,
   ) {}
 
   public isTokenExpired(): boolean {
-    if (!this.tokenExpiresAt){
-      Logger.log('Token has expired, refreshing at :' + Date.now().toLocaleString);
+    if (!this.tokenExpiresAt) {
+      Logger.log(
+        'Token has expired, refreshing at :' + Date.now().toLocaleString,
+      );
       return true;
     }
     return Date.now() >= this.tokenExpiresAt.getTime() - 5000; //extra 5s for buffer
@@ -46,15 +49,12 @@ export class TokenService {
     accessToken: string;
     expiresIn: string;
   }> {
-
-    
     const tokenRequest: TokenRequest = {
       clientSecret: this.auth0Config.clientSecret,
       clientId: this.auth0Config.clientId,
       grantType: this.auth0Config.grantType,
-      audience: 'https://' + this.auth0Config.domain + '/api/v2/'
+      audience:"https://"' + this.auth0Config.domain +"/api/v2/",
     };
-
 
     Logger.log('Calling Token API');
     const startTime = Date.now();

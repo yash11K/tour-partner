@@ -9,9 +9,6 @@ import { HttpModule } from '@nestjs/axios';
 @Module({
   controllers: [ApiController],
   providers: [ApiService, TokenService, Auth0Service],
-  imports: [
-    Auth0Module,
-    HttpModule,
-  ],
+  imports: [Auth0Module, HttpModule],
 })
 export class ApiModule {}

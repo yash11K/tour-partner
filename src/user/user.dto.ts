@@ -1,9 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Expose, Type } from "class-transformer";
-import { ROLES } from "src/auth0/auth0.roles.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose, Type } from 'class-transformer';
 
-
-class Role{
+class Role {
   id: string;
   name: string;
 }
@@ -101,9 +99,9 @@ export class UserResponse {
   loginsCount: number;
 
   @ApiProperty()
-  @Expose({ name: 'roles'})
+  @Expose({ name: 'roles' })
   @Type(() => Role)
-  role: Role[]
+  role: Role[];
 }
 
 export class UserRequest {
@@ -176,30 +174,30 @@ export class UserRequest {
   username?: string;
 }
 
-export class RoleAssignRequest{
+export class RoleAssignRequest {
   orgId: string;
   userId: string;
   role: string;
 }
 
-export class User{
+export class User {
   @ApiProperty()
-  @Expose({name: 'user_id'})
+  @Expose({ name: 'user_id' })
   userId: string;
 
   @ApiProperty()
-  @Expose({name: 'email'})
+  @Expose({ name: 'email' })
   email: string;
 
   @ApiProperty()
-  @Expose({name: 'picture'})
+  @Expose({ name: 'picture' })
   picture: string;
 
   @ApiProperty()
-  @Expose({name: 'role'})
+  @Expose({ name: 'role' })
   role: string;
 
   @ApiProperty()
-  @Expose({name: 'name'})
+  @Expose({ name: 'name' })
   name: string;
 }

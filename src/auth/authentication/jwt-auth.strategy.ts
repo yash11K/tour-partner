@@ -1,13 +1,13 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { PassportStrategy } from "@nestjs/passport";
-import { passportJwtSecret } from "jwks-rsa";
-import { ExtractJwt, Strategy } from "passport-jwt";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
+import { passportJwtSecret } from 'jwks-rsa';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStratergy extends PassportStrategy(Strategy) {
   public get configService(): ConfigService {
-      return this._configService;
+    return this._configService;
   }
   constructor(private _configService: ConfigService) {
     // allow JWT-formatted token to be passed
@@ -35,4 +35,3 @@ export class JwtStratergy extends PassportStrategy(Strategy) {
     };
   }
 }
-

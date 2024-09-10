@@ -1,7 +1,5 @@
 import { Branding, OrganizationApiRequest, OrganizationRequest } from "./organization.dto";
-import { log } from "console";
 import { plainToInstance } from "class-transformer";
-import { Logger } from "@nestjs/common";
 
 export class OrganizationTransformer {
   private readonly connection: any = [
@@ -13,7 +11,10 @@ export class OrganizationTransformer {
     },
   ];
 
-  public apiToInternal(org: OrganizationApiRequest, method: 'post' | 'patch'): OrganizationRequest {
+  public apiToInternal(
+    org: OrganizationApiRequest,
+    method:"post"' |"patch",
+  ): OrganizationRequest {
     const defaultMetaData: Record<string, string> = {
       isBlocked: 'false',
       createdAt: new Date().toDateString(),
@@ -21,12 +22,12 @@ export class OrganizationTransformer {
 
     org = plainToInstance(OrganizationApiRequest, org);
 
-    let orgReq = new OrganizationRequest();
+    const orgReq = new OrganizationRequest();
     orgReq.name = org.name;
     orgReq.displayName = org.displayName;
 
     if (org.logo) {
-      let branding = new Branding();
+      const branding = new Branding();
       branding.logoUrl = org.logo;
       orgReq.branding = branding;
     }
@@ -38,13 +39,12 @@ export class OrganizationTransformer {
       } else {
         orgReq.metadata = defaultMetaData;
       }
-
     } else if (method === 'patch') {
       if (org.metadata) {
         orgReq.metadata = org.metadata;
       }
     }
 
-  return orgReq;
+    return orgReq;
   }
 }

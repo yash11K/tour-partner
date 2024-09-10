@@ -1,8 +1,13 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { Observable } from 'rxjs';
-
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Injectable } from "@nestjs/common";
+import { Request, Response } from "express";
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logge,
+} from"@nestjs/common"';
 
 @Injectable()
 @Catch()
@@ -22,13 +27,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       Logger.error('Unhandled error:', exception);
     }
 
-    response
-      .status(status)
-      .json({
-        statusCode: status,
-        message: message,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
+    response.status(status).json({
+      statusCode: status,
+      message: message,
+      timestamp: new Date().toISOString(),
+      path: request.url
+    });
   }
 }
