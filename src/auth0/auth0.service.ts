@@ -84,11 +84,11 @@ export class Auth0Service{
   }
 
   public async fetchAllOragnizationMembers(organizationId: string): Promise<UserResponse[]> {
-    const endpoint = this.endpointProvider('organizations/:id/members', {pathParams: {id: organizationId}});
+    const endpoint = this.endpointProvider('organizations/:id/members', {pathParams: {id: organizationId},queryParams: {'fields': 'user_id,email,picture,name,roles'}});
     const members = await lastValueFrom(this.httpService.get<UserResponse[]>(endpoint).pipe(
       map(res => res.data),
     ));
-      return members;
+    return members.map(member => plainToInstance(UserResponse, member));
   }
 
 

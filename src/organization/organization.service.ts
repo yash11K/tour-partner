@@ -4,13 +4,15 @@ import { OrganizationApiRequest, OrganizationRequest, OrganizationResponse } fro
 import { instanceToPlain } from 'class-transformer';
 import { OrganizationTransformer } from './organization.transformer';
 import { ApiResponseError as ApiResponseError } from 'src/auth0/auth0.dto';
-import { UserResponse } from 'src/user/user.dto';
+import { User, UserResponse } from 'src/user/user.dto';
+import { UserTransformer } from 'src/user/user.transformer';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly auth0Service: Auth0Service,
-    private readonly transformer: OrganizationTransformer
+    private readonly transformer: OrganizationTransformer,
+    private readonly userTransformaer: UserTransformer,
   ){}
 
   async postOrganization(org: OrganizationApiRequest): Promise<number> {
@@ -38,8 +40,8 @@ export class OrganizationService {
     return _;
   }
 
-  async getOrganizationMembers(orgid: string): Promise<UserResponse[]> {
-    const members = await this.auth0Service.fetchAllOragnizationMembers(orgid);
+  async getOrganizationMembers(orgid: string): Promise<User[]> {
+    const members = (await this.auth0Service.fetchAllOragnizationMembers(orgid)).map(this.userTransformaer.internalToApi);
     return members;
   }
 
