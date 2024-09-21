@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { ApiProperty } from "@nestjs/swagger";
+import { Expose, Type } from "class-transformer";
 
 export class Branding {
   @Expose({ name: 'logo_url' })
@@ -7,7 +7,7 @@ export class Branding {
   logoUrl: string;
 }
 
-export class OrganizationResponse {
+export class OrganizationResponse{
   @Expose()
   @ApiProperty()
   id: string;
@@ -26,7 +26,7 @@ export class OrganizationResponse {
 
   @Expose()
   @ApiProperty()
-  metadata: Record<string, string>;
+  metadata: Record<string,string>
 }
 
 export class OrganizationRequest {
@@ -44,15 +44,16 @@ export class OrganizationRequest {
   enabledConnections: any;
 
   @Expose()
-  metadata?: Record<string, string>;
+  metadata?: Record<string,string>;
+ 
 }
 
-export class OrganizationApiRequest {
+export class OrganizationApiRequest{
   @Expose()
   @ApiProperty()
   name: string;
 
-  @Expose({ name: 'display_name' })
+  @Expose({ name: 'display_name'})
   @ApiProperty()
   displayName: string;
 
@@ -62,5 +63,5 @@ export class OrganizationApiRequest {
 
   @Expose()
   @ApiProperty()
-  metadata?: Record<string, string>;
+  metadata?: Record<string,string>
 }

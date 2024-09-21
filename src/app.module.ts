@@ -17,9 +17,7 @@ import { UserModule } from './user/user.module';
 
 @Module({
   controllers: [AppController],
-  providers: [
-    AppService,
-    TokenService,
+  providers: [AppService, TokenService,
     {
       provide: APP_INTERCEPTOR,
       useClass: ErrorInterceptor,
@@ -37,16 +35,9 @@ import { UserModule } from './user/user.module';
       useClass: GlobalExceptionFilter,
     },
   ],
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    JwtAuthModule,
-    ApiModule,
-    Auth0Module,
-    HttpModule,
-    OrganizationModule,
-    UserModule,
-  ],
+  imports: [ConfigModule.forRoot({
+    isGlobal: true,
+  }), JwtAuthModule, ApiModule, Auth0Module, HttpModule, OrganizationModule, UserModule],
 })
-export class AppModule {}
+export class AppModule {
+}

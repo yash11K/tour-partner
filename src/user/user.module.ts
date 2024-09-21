@@ -7,6 +7,6 @@ import { UserTransformer } from './user.transformer';
 @Module({
   providers: [UserService, UserTransformer],
   controllers: [UserController],
-  imports: [Auth0Module],
+  imports: [Auth0Module]
 })
 export class UserModule {}

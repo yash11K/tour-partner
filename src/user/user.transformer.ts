@@ -1,18 +1,18 @@
-import { User, UserRequest, UserResponse } from './user.dto';
-
-export class UserTransformer {
-  public apiToInternal(user: UserRequest): UserRequest {
+import { User, UserRequest, UserResponse } from "./user.dto";
+ 
+export class UserTransformer{
+  public apiToInternal(user: UserRequest): UserRequest{
     user.blocked = false;
-    user.name = user.givenName + +' ' + user.familyName;
+    user.name = user.givenName + ' '+  user.familyName;
     user.emailVerified = false;
     user.phoneVerified = false;
-    user.connection = 'Username-Password-Authentication';
+    user.connection = 'Username-Password-Authentication'
     user.verifyEmail = true;
     return user;
   }
 
-  public internalToApi(user: UserResponse): User {
-    const userApi: User = new User();
+  public internalToApi(user: UserResponse): User{
+    let userApi: User = new User(); 
     userApi.userId = user.userId;
     userApi.email = user.email;
     userApi.picture = user.picture;

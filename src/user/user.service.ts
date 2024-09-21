@@ -8,18 +8,17 @@ export class UserService {
   constructor(
     private readonly auth0Service: Auth0Service,
     private readonly transformer: UserTransformer,
-  ) {}
-
-  async getUserDetails(userId: string): Promise<UserResponse> {
+  ){}
+  async getUserDetails(userId: string): Promise<UserResponse>{
     return await this.auth0Service.fetchUserDetails(userId);
   }
 
-  async registerUser(user: UserRequest) {
+  async registerUser(user: UserRequest){
     user = this.transformer.apiToInternal(user);
     return await this.auth0Service.postUser(user);
   }
 
-  async updateUser(user: UserRequest) {
-    return await this.auth0Service.patchUser(user);
+  async updateUser(user: UserRequest, id: string) {
+    return await this.auth0Service.patchUser(user, id);
   }
 }
